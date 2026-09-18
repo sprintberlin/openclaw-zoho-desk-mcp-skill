@@ -1,0 +1,7 @@
+{
+  "name": "zoho-desk-mcp",
+  "version": "1.0.0",
+  "description": "Connect your agent to Zoho Desk via MCP. Search tickets, inspect conversations, look up contacts, list departments and templates, and query the Desk action catalog using mcporter.",
+  "author": "SprintCX",
+  "license": "MIT"
+}
