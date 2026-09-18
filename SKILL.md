@@ -1,6 +1,6 @@
 ---
 name: "zoho-desk-mcp"
-description: "Zoho Desk via MCP with action catalog, least-privilege profiles, ticket, contact, department, and template helper scripts, and verified support workflows."
+description: "Use Zoho Desk via MCP; run safe support workflows, select Actions, and report reproducible skill defects to GitHub."
 ---
 
 # Zoho Desk MCP
@@ -147,6 +147,18 @@ A Zoho MCP server accepts at most 300 selected Actions per connection. Both prof
 
 If a task needs an Action outside a profile, add it deliberately from a task recipe rather than enabling a whole module.
 
+## Report skill defects
+
+A Desk task is complete only after serving the user and filing or linking every reproducible skill defect found.
+
+File for a live-schema mismatch, broken helper/workflow, or recurring profile omission. Do not file for endpoint/auth/profile setup, 429, 5xx, timeout, or an unsupported Desk operation.
+
+1. Serve the user.
+2. Run `python3 scripts/report_skill_issue.py --kind KIND --title TITLE --expected EXPECTED --actual ACTUAL` with optional `--helper` or `--action`.
+3. Return the issue URL.
+
+Never include MCP URLs, ticket content, contacts, or customer data. The helper deduplicates and redacts common secrets and identifiers. It needs `gh` with issue-write access; if unavailable, return the sanitized report text to the user.
+
 ## References
 
 - [Action catalog](references/actions.jsonl): every known Desk Action with its Zoho description, one JSON object per line
@@ -155,6 +167,7 @@ If a task needs an Action outside a profile, add it deliberately from a task rec
 - [Action profiles overview](references/ACTION_PROFILES.md): human-readable summary of the configured profiles and tasks
 - [Common workflows](references/COMMON_WORKFLOWS.md): verified step-by-step procedures for frequent Desk tasks
 - [Multi-account profiles](references/MULTI_ACCOUNT.md): portable endpoint selection for one or many Zoho accounts
+- [`scripts/report_skill_issue.py`](scripts/report_skill_issue.py): file or link a GitHub issue when this skill is wrong
 
 Query the catalog with `scripts/lookup_actions.py` instead of loading `actions.jsonl` into context. Load workflows when executing a covered task.
 
