@@ -133,10 +133,19 @@ Supported options:
 
 Run any helper with `--help` without configuring credentials. Unknown or incomplete options must exit with status 2.
 
-## Role profiles
+## Role profiles and the 300-Action limit
 
-- **`ticket-agent`**: Frontline support operations. Allows ticket/thread lookup, drafting and sending replies, internal comments, time tracking, triage, tags, and blueprint transitions. Excludes administrative changes to templates, departments, fields, and settings.
-- **`desk-admin`**: Inherits `ticket-agent` and adds helpdesk configuration (email and ticket templates, departments, custom fields, layouts, business hours, holiday lists, skill routing, and knowledge base curation). Explicitly denies permanent spam empties, bulk purges, and SAR data export.
+A Zoho MCP server accepts at most 300 selected Actions per connection. Both profiles stay below that ceiling, so each fits on one MCP server and keeps the session tool catalog small.
+
+| Profile | Actions | Fits one MCP server |
+|---|---|---|
+| `ticket-agent` | 180 | yes |
+| `desk-admin` (inherits `ticket-agent`) | 284 | yes |
+
+- **`ticket-agent`** (180): Frontline support operations. Ticket and thread lookup, drafting and sending replies, internal comments, time tracking, triage, tags, followers, blueprint transitions, contact and account lookup, and knowledge base search. Field, layout, department, and agent metadata is included read-only so writes use correct IDs. Excludes administrative changes to templates, departments, fields, and settings. Community forum, IM sessions, calls, events, contracts, and KB translation management are left out to stay inside the limit; enable them per task recipe when a job needs them.
+- **`desk-admin`** (284 resolved): Inherits `ticket-agent` and adds 104 administrative Actions for helpdesk configuration (email and ticket templates, departments and From addresses, custom fields, layouts, business hours, holiday lists, skills and routing, blueprint authoring, agents and teams, and knowledge base authoring). Explicitly denies all deletes, permanent spam empties, bulk purges, and SAR data export.
+
+If a task needs an Action outside a profile, add it deliberately from a task recipe rather than enabling a whole module.
 
 ## References
 

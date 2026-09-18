@@ -4,6 +4,17 @@ This document provides human-readable guidance on the least-privilege profiles a
 
 The machine-readable source of truth is [`references/profiles.json`](profiles.json), validated against [`references/actions.jsonl`](actions.jsonl). Use the bundled CLI `scripts/lookup_actions.py` for automated inspection, token-efficient queries, and copy-ready lists.
 
+## The 300-Action Server Limit
+
+A Zoho MCP server accepts at most 300 selected Actions per connection. Both profiles in this skill are sized to stay below that ceiling, so each one can be enabled on a single MCP server without trimming:
+
+| Profile | Actions | Fits one MCP server |
+|---|---|---|
+| `ticket-agent` | 180 | yes |
+| `desk-admin` (inherits `ticket-agent`) | 284 | yes |
+
+Fewer Actions also means a smaller tool catalog and less context consumed per session. When a specific job needs an Action outside these profiles, add it deliberately from a task recipe instead of enabling whole modules.
+
 ## Role Profiles Overview
 
 Start with the smallest role profile that covers the user or agent's responsibilities.
@@ -21,16 +32,17 @@ python3 scripts/lookup_actions.py --profile ticket-agent --names-only
 python3 scripts/lookup_actions.py --profile desk-admin --names-only
 ```
 
-### 1. Desk Ticket Agent (`ticket-agent`)
+### 1. Desk Ticket Agent (`ticket-agent`) - 180 Actions
 - **Focus:** Daily frontline support operations.
-- **Allowed:** Search and view tickets, threads, comments, contacts, and accounts; draft and send customer email replies (`draftsReply`, `sendReply`, `sendForReview`); add internal comments with mentions (`createTicketComment`); log work time (`createTicketTimeEntry`); update status, priority, and ticket fields (`updateTicket`, `closeTickets`, `moveTicket`); associate tags; execute blueprint transitions (`performBlueprintTransition`).
-- **Excluded:** Any helpdesk settings, department alterations, custom fields, email templates, workflows, SLAs, and permanent deletions.
+- **Allowed:** Search and view tickets, threads, comments, contacts, and accounts; draft and send customer email replies (`draftsReply`, `sendReply`, `sendForReview`); add internal comments with mentions (`createTicketComment`); log work time (`createTicketTimeEntry`); update status, priority, and ticket fields (`updateTicket`, `closeTickets`, `moveTicket`); associate tags and followers; execute blueprint transitions (`performBlueprintTransition`); search the knowledge base for answers (`searchSolutions`, `suggestArticlesForTicket`).
+- **Read-only metadata:** Fields, layouts, modules, departments, agents, teams, business hours, and holiday lists are included as reads so writes use correct IDs and API names.
+- **Excluded:** Any helpdesk settings, department alterations, custom fields, email templates, workflows, SLAs, and permanent deletions. Community forum, IM/chat sessions, calls, events, contracts, and KB translation management are left out to stay inside the 300-Action limit; enable them from a task recipe when a job needs them.
 
-### 2. Desk Administrator (`desk-admin`)
-- **Inherits:** `ticket-agent`.
-- **Focus:** Complete operational and administrative control over Zoho Desk configuration.
-- **Allowed:** Everything in `ticket-agent` plus email templates (`addTemplate`, `updateTemplate`), ticket templates, departments (`addDepartment`, `updateDepartment`), custom fields and layouts (`createField`, `updateLayout`), business hours, holiday lists, skill routing, blueprint authoring, and knowledge base root categories and articles.
-- **Explicitly Denied (Safety):** Permanent spam emptying (`deleteAllSpamTickets`, `emptySpamTickets`), bulk trash purges, Subject Access Request permanent data export/purge (`sarExport`, `sarExportAll`), and unconfirmed agent anonymization.
+### 2. Desk Administrator (`desk-admin`) - 284 Actions resolved
+- **Inherits:** `ticket-agent` (180) and adds 104 administrative Actions.
+- **Focus:** Helpdesk configuration on top of full agent capability.
+- **Allowed:** Everything in `ticket-agent` plus email templates (`addTemplate`, `updateTemplate`), ticket templates, departments and From addresses (`addDepartment`, `updateDepartment`, `addFromAddress`), custom fields and layouts (`createField`, `updateLayout`, `updateFieldPermissions`), business hours, holiday lists, skills and routing (`createSkill`, `updateRoutingPreference`), blueprint authoring (`createBlueprint`, `publishDraftBlueprint`), agents, teams, and roles, and knowledge base authoring (`createArticle`, `updateArticle`).
+- **Explicitly Denied (Safety):** All delete Actions, permanent spam emptying (`deleteAllSpamTickets`, `emptySpamTickets`), bulk trash purges (`moveToTrash`, `moveAccountsToTrash`), Subject Access Request data export (`sarExport`, `sarExportAll`), and deleted-agent anonymization.
 
 ## Task Recipes Overview
 

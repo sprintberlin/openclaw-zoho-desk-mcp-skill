@@ -94,6 +94,16 @@ class ActionsCatalogAndLookupTests(unittest.TestCase):
         self.assertEqual(data.get("key"), "sendReply")
         self.assertIn("email reply", data.get("description", ""))
 
+    def test_both_profiles_fit_within_300_action_limit(self):
+        data = json.loads(PROFILES_PATH.read_text(encoding="utf-8"))
+        profiles = data["profiles"]
+        agent_actions = lookup_actions.resolve_profile_actions("ticket-agent", profiles)
+        admin_actions = lookup_actions.resolve_profile_actions("desk-admin", profiles)
+        self.assertLessEqual(len(agent_actions), 200, f"ticket-agent exceeded target: {len(agent_actions)}")
+        self.assertLessEqual(len(admin_actions), 300, f"desk-admin exceeded 300 limit: {len(admin_actions)}")
+        self.assertEqual(len(agent_actions), 180)
+        self.assertEqual(len(admin_actions), 284)
+
     def test_ticket_agent_profile_allows_reply_but_not_admin(self):
         data = json.loads(PROFILES_PATH.read_text(encoding="utf-8"))
         profiles = data["profiles"]

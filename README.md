@@ -156,7 +156,14 @@ python3 scripts/list_templates.py --department-id 987654321 --json
 
 ## Desk Action Catalog and Profiles
 
-Zoho Desk exposes 618 MCP Actions. Enabling all of them gives a normal agent unnecessary access to helpdesk settings, layout changes, and destructive deletes.
+Zoho Desk exposes 618 MCP Actions, but a single Zoho MCP server accepts at most **300 selected Actions**. Enabling everything is therefore impossible, and enabling too much also gives a normal agent unnecessary access to helpdesk settings, layout changes, and destructive deletes while inflating the per-session tool catalog.
+
+Both profiles in this skill are sized to fit one MCP server:
+
+| Profile | Actions | Fits the 300 limit |
+|---|---|---|
+| `ticket-agent` | 180 | yes |
+| `desk-admin` (inherits `ticket-agent`) | 284 | yes |
 
 The catalog is JSON, not prose, so an agent can answer "which Actions do I need for this task" without reading thousands of lines:
 
@@ -190,8 +197,14 @@ python3 scripts/lookup_actions.py --validate
 
 There is no read-only profile. The two roles this skill ships are:
 
-1. **Desk Ticket Agent** (`ticket-agent`): daily support work. Look up tickets and conversations, draft and send replies, add internal comments, log time, triage, tag, and execute blueprint transitions. No template, department, field, or settings changes.
-2. **Desk Administrator** (`desk-admin`): inherits `ticket-agent` and adds templates, departments, layouts, custom fields, business hours, skills, routing, and knowledge base administration. Permanent spam empties, bulk purges, and SAR data export stay denied.
+1. **Desk Ticket Agent** (`ticket-agent`, 180 Actions): daily support work. Look up tickets and conversations, draft and send replies, add internal comments, log time, triage, tag, manage followers, execute blueprint transitions, and search contacts, accounts, and knowledge base articles. Field, layout, department, and agent metadata is included read-only so writes use correct IDs and API names. No template, department, field, or settings changes. Community forum, IM sessions, calls, events, contracts, and KB translation management are deliberately excluded to stay within the 300-Action limit.
+2. **Desk Administrator** (`desk-admin`, 284 Actions resolved): inherits `ticket-agent` and adds 104 administrative Actions covering templates, departments and From addresses, layouts, custom fields, business hours, holiday lists, skills, routing, blueprint authoring, agents and teams, and knowledge base administration. All deletes, permanent spam empties, bulk purges, and SAR data export stay denied.
+
+When a specific job needs an Action outside these profiles, add it from a task recipe instead of enabling a whole module:
+
+```bash
+python3 scripts/lookup_actions.py --task template-management --names-only
+```
 
 After configuring the connection at [mcp.zoho.eu](https://mcp.zoho.eu), verify the actual result rather than trusting the profile document:
 
