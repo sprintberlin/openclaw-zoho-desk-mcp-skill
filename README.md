@@ -247,6 +247,7 @@ The MCP connection token may have expired or may not include the required scope.
 ## Repository Files
 
 - `SKILL.md`: Agent Skill instructions.
+- `CONTRIBUTING.md`: Issue and pull request workflows for humans and agents.
 - `references/actions.jsonl`: Complete Action catalog, one JSON object per Action.
 - `references/profiles.json`: Role profiles and per-task Action recipes.
 - `references/CATALOG_FORMAT.md`: Catalog format, record shape, and refresh procedure.

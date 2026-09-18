@@ -147,17 +147,15 @@ A Zoho MCP server accepts at most 300 selected Actions per connection. Both prof
 
 If a task needs an Action outside a profile, add it deliberately from a task recipe rather than enabling a whole module.
 
-## Report skill defects
+## Report skill defects and contribute
 
-A Desk task is complete only after serving the user and filing or linking every reproducible skill defect found.
+Contributions are explicitly welcome from humans and agents. A Desk task is complete only after serving the user and filing or linking every reproducible skill defect found.
 
-File for a live-schema mismatch, broken helper/workflow, or recurring profile omission. Do not file for endpoint/auth/profile setup, 429, 5xx, timeout, or an unsupported Desk operation.
+- **Issue**: For schema mismatches, broken helpers or workflows, or missing profile Actions. Run `python3 scripts/report_skill_issue.py --kind KIND --title TITLE --expected EXPECTED --actual ACTUAL`.
+- **Pull request**: Preferred when you can fix and verify the defect.
+- See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution rules and `gh` workflows.
 
-1. Serve the user.
-2. Run `python3 scripts/report_skill_issue.py --kind KIND --title TITLE --expected EXPECTED --actual ACTUAL` with optional `--helper` or `--action`.
-3. Return the issue URL.
-
-Never include MCP URLs, ticket content, contacts, or customer data. The helper deduplicates and redacts common secrets and identifiers. It needs `gh` with issue-write access; if unavailable, return the sanitized report text to the user.
+Do not file skill issues for endpoint/auth/profile setup, rate limits, transient service failures, timeouts, or unsupported Desk operations. Never include MCP URLs, ticket content, contacts, or customer data.
 
 ## References
 
@@ -168,6 +166,7 @@ Never include MCP URLs, ticket content, contacts, or customer data. The helper d
 - [Common workflows](references/COMMON_WORKFLOWS.md): verified step-by-step procedures for frequent Desk tasks
 - [Multi-account profiles](references/MULTI_ACCOUNT.md): portable endpoint selection for one or many Zoho accounts
 - [`scripts/report_skill_issue.py`](scripts/report_skill_issue.py): file or link a GitHub issue when this skill is wrong
+- [Contributing guide](CONTRIBUTING.md): issue and pull request workflows for humans and agents
 
 Query the catalog with `scripts/lookup_actions.py` instead of loading `actions.jsonl` into context. Load workflows when executing a covered task.
 
