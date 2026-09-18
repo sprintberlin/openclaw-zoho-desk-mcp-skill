@@ -43,7 +43,7 @@ def main(argv=None):
 
     result = call(
         "getTicket",
-        {"path_variables": {"id": args.ticket_id}},
+        {"path_variables": {"ticketId": args.ticket_id}},
         timeout=args.timeout,
     )
     if "error" in result:

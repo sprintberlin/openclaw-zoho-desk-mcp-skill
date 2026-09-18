@@ -52,6 +52,20 @@ class HelperParserTests(unittest.TestCase):
             inspect_ticket.build_parser().parse_args([])
         self.assertEqual(ctx.exception.code, 2)
 
+    def test_inspect_ticket_uses_ticket_id_path_variable(self):
+        response = {"data": {"id": "123456789", "ticketNumber": "42"}}
+        with mock.patch.object(inspect_ticket.ENDPOINT, "configure"):
+            with mock.patch.object(inspect_ticket, "call", return_value=response) as call:
+                with mock.patch("builtins.print"):
+                    code = inspect_ticket.main(["123456789", "--json"])
+
+        self.assertEqual(code, 0)
+        call.assert_called_once_with(
+            "getTicket",
+            {"path_variables": {"ticketId": "123456789"}},
+            timeout=30,
+        )
+
     def test_list_templates_requires_department(self):
         with self.assertRaises(SystemExit) as ctx:
             list_templates.build_parser().parse_args([])

@@ -106,7 +106,7 @@ mcporter call "$ZOHO_DESK_MCP_URL.ZohoDesk_getTickets" --args "$(< /tmp/desk_tic
 ```bash
 cat << 'EOF' > /tmp/desk_ticket.json
 {
-  "path_variables": {"id": "123456789"}
+  "path_variables": {"ticketId": "123456789"}
 }
 EOF
 mcporter call "$ZOHO_DESK_MCP_URL.ZohoDesk_getTicket" --args "$(< /tmp/desk_ticket.json)"

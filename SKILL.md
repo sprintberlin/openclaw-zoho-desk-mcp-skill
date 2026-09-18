@@ -76,7 +76,7 @@ Look up a ticket by ID:
 
 ```bash
 cat > /tmp/desk_ticket.json <<'JSON'
-{"path_variables": {"id": "123456789"}}
+{"path_variables": {"ticketId": "123456789"}}
 JSON
 mcporter call "$ZOHO_DESK_MCP_URL.ZohoDesk_getTicket" --args "$(< /tmp/desk_ticket.json)"
 ```
